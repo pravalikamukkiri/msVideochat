@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "402705107363",
+    "project_id": "teamsclone-engage",
+    "storage_bucket": "teamsclone-engage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:402705107363:android:654fb6246ea896e4d07216",
+        "android_client_info": {
+          "package_name": "com.example.teamsclone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "402705107363-gdcmlikckdhs1vd1p7q32lec416bvoei.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmQBEGC8dRnnzy9xEK5P5Gg90YyrzBMhs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "402705107363-gdcmlikckdhs1vd1p7q32lec416bvoei.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
