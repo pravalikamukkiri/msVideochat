@@ -72,6 +72,20 @@ class IndexState extends State<IndexPage> {
                 onJoin();
               },
             ),
+            RaisedButton(
+              child: Text('Join chat room'),
+              onPressed:() async{
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Message(
+                      userName: _usernameController.text,
+                      channelName: _channelController.text,
+                    )
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -98,10 +112,6 @@ class IndexState extends State<IndexPage> {
             userName: _usernameController.text,
             role: ClientRole.Broadcaster,
           ),
-          // builder: (context) => Message(
-          //    userName: _usernameController.text,
-          //   channelName: _channelController.text,
-          // )
         ),
       );
     }

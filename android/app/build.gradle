@@ -62,3 +62,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'androidx.multidex:multidex:2.0.1'
 }
+
+configurations {
+ compile.exclude group: 'com.google.zxing'
+}

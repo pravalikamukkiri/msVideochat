@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../utils/settings.dart';
@@ -20,6 +23,7 @@ class _MessageState extends State<Message> {
 
   final _channelMessageController = TextEditingController();
 
+
   final _infoStrings = <String>[];
 
   AgoraRtmClient _client;
@@ -29,7 +33,6 @@ class _MessageState extends State<Message> {
   void initState() {
     super.initState();
     _createClient();
-
   }
 
   @override
@@ -60,6 +63,7 @@ class _MessageState extends State<Message> {
     _client?.onMessageReceived = (AgoraRtmMessage message, String peerId) {
       _log("Peer msg: " + peerId + ", msg: " + (message.text??""));
     };
+   
   }
 
   Future<AgoraRtmChannel> _createChannel(String name) async {
@@ -69,6 +73,13 @@ class _MessageState extends State<Message> {
           (AgoraRtmMessage message, AgoraRtmMember member) {
         _log(member.userId + " " + (message.text??""));
       };
+      List<Messagedata> msgl;
+      Firestore.instance.collection(widget.channelName.toString()).get().then((value) => {
+        value.docs.forEach((element) {
+          _log(element["name"] + ": " + element["msg"]);
+          // msgl.add(Messagedata(name: element["name"], msg: element["msg"], time: element["time"]));
+        })
+      });
     }
     return channel;
   }
@@ -120,7 +131,6 @@ class _MessageState extends State<Message> {
     return Expanded(
         child: Container(
             child: ListView.builder(
-      itemExtent: 24,
       itemBuilder: (context, i) {
         return ListTile(
           contentPadding: const EdgeInsets.all(0.0),
@@ -153,7 +163,6 @@ class _MessageState extends State<Message> {
 
       try {
         await _client?.login(null, userId);
-        _log('Login success: ' + userId);
         setState(() {
           _isLogin = true;
         });
@@ -188,7 +197,6 @@ class _MessageState extends State<Message> {
       try {
         _channel = await _createChannel(channelId);
         await _channel?.join();
-        _log('Join channel success.');
 
         setState(() {
           _isInChannel = true;
@@ -217,6 +225,11 @@ class _MessageState extends State<Message> {
     try {
       await _channel?.sendMessage(AgoraRtmMessage.fromText(text));
       _log(widget.userName+ ': '+ text);
+      FirebaseFirestore.instance.collection(widget.channelName.toString()).add({
+        "name": widget.userName.toString(),
+        "msg" : text, 
+        "time": DateTime.now()
+        }).then((value) => print(value)).catchError((onError) => print(onError));
     } catch (errorCode) {
       _log('error sending message: ' + errorCode.toString());
     }
@@ -225,7 +238,14 @@ class _MessageState extends State<Message> {
   void _log(String info) {
     print(info);
     setState(() {
-      _infoStrings.insert(0, info);
+      _infoStrings.add(info);
     });
   }
+}
+
+class Messagedata{
+  String name;
+  String msg;
+  String time;
+  Messagedata ({this.name,this.msg,this.time});
 }
