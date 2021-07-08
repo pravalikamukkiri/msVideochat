@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../utils/settings.dart';
-
 import 'package:agora_rtm/agora_rtm.dart';
 
 
@@ -59,11 +56,7 @@ class _MessageState extends State<Message> {
 
   void _createClient() async {
     _client =
-        await AgoraRtmClient.createInstance(APP_ID);
-    _client?.onMessageReceived = (AgoraRtmMessage message, String peerId) {
-      _log("Peer msg: " + peerId + ", msg: " + (message.text??""));
-    };
-   
+        await AgoraRtmClient.createInstance(APP_ID);   
   }
 
   Future<AgoraRtmChannel> _createChannel(String name) async {
@@ -73,11 +66,9 @@ class _MessageState extends State<Message> {
           (AgoraRtmMessage message, AgoraRtmMember member) {
         _log(member.userId + " " + (message.text??""));
       };
-      List<Messagedata> msgl;
       Firestore.instance.collection(widget.channelName.toString()).get().then((value) => {
         value.docs.forEach((element) {
           _log(element["name"] + ": " + element["msg"]);
-          // msgl.add(Messagedata(name: element["name"], msg: element["msg"], time: element["time"]));
         })
       });
     }
@@ -92,8 +83,14 @@ class _MessageState extends State<Message> {
      new OutlineButton(
         child: Text(_isLogin ? 'Leave' : 'Start', style: textStyle),
         onPressed: (){
-          _toggleLogin();
-          _toggleJoinChannel();
+          if(_isInChannel){
+            _toggleJoinChannel();
+            _toggleLogin();
+          }
+          else{
+            _toggleLogin();
+            _toggleJoinChannel();
+          }
         }
       )
     ]);
@@ -149,7 +146,6 @@ class _MessageState extends State<Message> {
 
         setState(() {
           _isLogin = false;
-          _isInChannel = false;
         });
       } catch (errorCode) {
         _log('Logout error: ' + errorCode.toString());
@@ -160,7 +156,6 @@ class _MessageState extends State<Message> {
         _log('Please input your user id to login.');
         return;
       }
-
       try {
         await _client?.login(null, userId);
         setState(() {
@@ -179,8 +174,6 @@ class _MessageState extends State<Message> {
         if(_channel != null) {
           _client?.releaseChannel(_channel.channelId);
         }
-        _channelMessageController.clear();
-
         setState(() {
           _isInChannel = false;
         });
@@ -230,6 +223,7 @@ class _MessageState extends State<Message> {
         "msg" : text, 
         "time": DateTime.now()
         }).then((value) => print(value)).catchError((onError) => print(onError));
+        _channelMessageController.clear();
     } catch (errorCode) {
       _log('error sending message: ' + errorCode.toString());
     }
@@ -241,11 +235,4 @@ class _MessageState extends State<Message> {
       _infoStrings.add(info);
     });
   }
-}
-
-class Messagedata{
-  String name;
-  String msg;
-  String time;
-  Messagedata ({this.name,this.msg,this.time});
 }
