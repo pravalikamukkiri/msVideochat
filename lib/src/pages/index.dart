@@ -22,6 +22,7 @@ class IndexState extends State<IndexPage> {
 
   ClientRole _role = ClientRole.Broadcaster;
 
+
   @override
   void dispose() {
     // dispose input controller
@@ -66,13 +67,36 @@ class IndexState extends State<IndexPage> {
               )
               
             ),
-            RaisedButton(
-              child: Text('Join meeting'),
-              onPressed:(){
-                onJoin();
-              },
+            Row(
+              children: [
+                Container(child: Radio(
+                  value: ClientRole.Broadcaster,
+                  groupValue: _role,
+                  onChanged: (ClientRole value){
+                    setState(() {_role = value;});
+                  },
+                ),),
+                Text("Broadcast",),
+                Container(child: Radio(
+                  value: ClientRole.Audience,
+                  groupValue: _role,
+                  onChanged: (ClientRole value){
+                    setState(() {_role = value;});
+                  },
+                ),),
+                Text("Auidence"),
+                Spacer(),
+                RaisedButton(
+                  child: Text('Join meet'),
+                  onPressed:(){
+                    onJoin();
+                  },
+                ),
+                Spacer(),
+              ],
             ),
             RaisedButton(
+              padding: EdgeInsets.all(5),
               child: Text('Join chat room'),
               onPressed:() async{
                 await Navigator.push(
@@ -110,7 +134,7 @@ class IndexState extends State<IndexPage> {
           builder: (context) => CallPage(
             channelName: _channelController.text,
             userName: _usernameController.text,
-            role: ClientRole.Broadcaster,
+            role: _role,
           ),
         ),
       );

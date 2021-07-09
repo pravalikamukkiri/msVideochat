@@ -28,6 +28,7 @@ class _CallPageState extends State<CallPage> {
   final _users = <int>[];
   final _infoStrings = <String>[];
   bool muted = false;
+  bool camoff = false;
   RtcEngine _engine;
 
   @override
@@ -92,19 +93,14 @@ class _CallPageState extends State<CallPage> {
       });
     }, leaveChannel: (stats) {
       setState(() {
-        // _infoStrings.add('onLeaveChannel');
         _users.clear();
       });
     }, userJoined: (uid, elapsed) {
       setState(() {
-        final info = 'userJoined: $uid';
-        // _infoStrings.add(info);
         _users.add(uid);
       });
     }, userOffline: (uid, elapsed) {
       setState(() {
-        final info = 'userOffline: $uid';
-        // _infoStrings.add(info);
         _users.remove(uid);
       });
     }, firstRemoteVideoFrame: (uid, width, height, elapsed) {
@@ -180,7 +176,47 @@ class _CallPageState extends State<CallPage> {
 
   /// Toolbar layout
   Widget _toolbar() {
-    if (widget.role == ClientRole.Audience) return Container();
+    if (widget.role == ClientRole.Audience) return Container(
+      alignment: Alignment.bottomCenter,
+      child: Row(
+        children: [
+          Spacer(),
+          RawMaterialButton(
+            onPressed: () => _onCallEnd(context),
+            child: Icon(
+              Icons.call_end,
+              color: Colors.white,
+              size: 35.0,
+            ),
+            shape: CircleBorder(),
+            elevation: 2.0,
+            fillColor: Colors.redAccent,
+            padding: const EdgeInsets.all(15.0),
+          ),
+          Spacer(),
+          RawMaterialButton(
+                onPressed: () async{
+                  Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Message(
+                    userName: widget.userName.toString(),
+                    channelName: widget.channelName.toString(),
+                  ),
+                  ));
+                },
+                child: Icon(
+                  Icons.chat,
+                  color: Colors.blueAccent,
+                  size: 20.0,
+                ),
+                shape: CircleBorder(),
+                elevation: 2.0,
+                fillColor: Colors.white,
+                padding: const EdgeInsets.all(12.0),
+              ),
+              Spacer(),
+        ],
+      ),
+    );
     return Container(
       alignment: Alignment.bottomCenter,
       padding: const EdgeInsets.symmetric(vertical: 48),
@@ -214,7 +250,7 @@ class _CallPageState extends State<CallPage> {
           RawMaterialButton(
             onPressed: _onSwitchCamera,
             child: Icon(
-              Icons.switch_camera,
+              camoff ? Icons.camera_alt : Icons.camera,
               color: Colors.blueAccent,
               size: 20.0,
             ),
@@ -247,56 +283,6 @@ class _CallPageState extends State<CallPage> {
     );
   }
 
-  /// Info panel to show logs
-  Widget _panel() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 48),
-      alignment: Alignment.bottomCenter,
-      child: FractionallySizedBox(
-        heightFactor: 0.5,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 48),
-          child: ListView.builder(
-            reverse: true,
-            itemCount: _infoStrings.length,
-            itemBuilder: (BuildContext context, int index) {
-              if (_infoStrings.isEmpty) {
-                return null;
-              }
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 3,
-                  horizontal: 10,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.yellowAccent,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Text(
-                          _infoStrings[index],
-                          style: TextStyle(color: Colors.blueGrey),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
   void _onCallEnd(BuildContext context) {
     Navigator.pop(context);
   }
@@ -309,7 +295,10 @@ class _CallPageState extends State<CallPage> {
   }
 
   void _onSwitchCamera() {
-    _engine.switchCamera();
+    setState(() {
+      camoff = !camoff;
+    });
+    _engine.muteLocalVideoStream(camoff);
   }
 
   @override
@@ -325,7 +314,6 @@ class _CallPageState extends State<CallPage> {
         child: Stack(
           children: <Widget>[
             _viewRows(),
-            _panel(),
             _toolbar(),
           ],
         ),

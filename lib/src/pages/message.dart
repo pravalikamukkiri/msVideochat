@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import '../utils/settings.dart';
 import 'package:agora_rtm/agora_rtm.dart';
+import 'members.dart';
 
 
 class Message extends StatefulWidget {
@@ -18,10 +19,12 @@ class _MessageState extends State<Message> {
   bool _isLogin = false;
   bool _isInChannel = false;
 
+
   final _channelMessageController = TextEditingController();
 
 
   final _infoStrings = <String>[];
+  final  msgl = <Messagedata>[];
 
   AgoraRtmClient _client;
   AgoraRtmChannel _channel;
@@ -30,10 +33,13 @@ class _MessageState extends State<Message> {
   void initState() {
     super.initState();
     _createClient();
+    
   }
 
+  
   @override
   Widget build(BuildContext context) {
+    String name;
     return Scaffold(
           appBar: AppBar(
             title: Text(widget.channelName.toString()),
@@ -45,7 +51,6 @@ class _MessageState extends State<Message> {
             child: Column(
               children: [
                 _buildLogin(),
-                _buildGetMembers(),
                 _buildSendChannelMessage(),
                 _buildInfoList(),
               ],
@@ -69,6 +74,11 @@ class _MessageState extends State<Message> {
       Firestore.instance.collection(widget.channelName.toString()).get().then((value) => {
         value.docs.forEach((element) {
           _log(element["name"] + ": " + element["msg"]);
+          Messagedata x =  Messagedata( element["name"] ,element["msg"], element["time"] );
+          if(!msgl.contains(x)){
+            addmsg(x);
+          }
+          
         })
       });
     }
@@ -83,16 +93,23 @@ class _MessageState extends State<Message> {
      new OutlineButton(
         child: Text(_isLogin ? 'Leave' : 'Start', style: textStyle),
         onPressed: (){
-          if(_isInChannel){
+          if(_isLogin){
             _toggleJoinChannel();
             _toggleLogin();
+            Navigator.pop(context);
           }
           else{
             _toggleLogin();
             _toggleJoinChannel();
           }
         }
-      )
+      ),
+      Spacer(),
+      new RaisedButton.icon(
+        color: Colors.lightBlueAccent.shade100,
+        label: Text("Participants"),
+        padding: EdgeInsets.all(5),
+        icon: Icon(Icons.people), onPressed: _toggleGetMembers)
     ]);
   }
 
@@ -112,26 +129,32 @@ class _MessageState extends State<Message> {
     ]);
   }
 
-  Widget _buildGetMembers() {
-    if (!_isLogin || !_isInChannel) {
-      return Container();
-    }
-    return Row(children: <Widget>[
-      new OutlineButton(
-        child: Text('Get Members in Channel', style: textStyle),
-        onPressed: _toggleGetMembers,
-      )
-    ]);
-  }
-
   Widget _buildInfoList() {
+    // msgl.sort((a,b) => a.time.compareTo(b.time));
+    // msgl.forEach((element)=> {
+    //   _log(element.name.toString() +":" +element.msg.toString())
+    //   });
+    
     return Expanded(
         child: Container(
             child: ListView.builder(
       itemBuilder: (context, i) {
-        return ListTile(
-          contentPadding: const EdgeInsets.all(0.0),
-          title: Text(_infoStrings[i]),
+        return Container(
+           alignment : _infoStrings[i].substring(0,_infoStrings[i].indexOf(':')) == widget.userName ? 
+           Alignment.centerRight : Alignment.centerLeft,
+          padding: EdgeInsets.all(5),
+          child: Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Colors.lightBlueAccent.shade100,
+              border: Border.all(width:5,
+              color: Colors.blue.shade200),
+              borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            child: Text(
+              _infoStrings[i].substring(0,_infoStrings[i].indexOf(':')) == widget.userName ?
+               "You "+ _infoStrings[i].substring(_infoStrings[i].indexOf(':')) : _infoStrings[i],
+            style: TextStyle(fontSize: 15),),
+          ),
         );
       },
       itemCount: _infoStrings.length,
@@ -203,7 +226,16 @@ class _MessageState extends State<Message> {
   void _toggleGetMembers() async {
     try {
       List<AgoraRtmMember> members = await _channel?.getMembers();
-      _log('Members: ' + members.toString());
+      print(members.toString());
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Memberspage(
+            Members: members,
+          ),
+        ),
+      );
+
     } catch (errorCode) {
       _log('GetMembers failed: ' + errorCode.toString());
     }
@@ -221,12 +253,14 @@ class _MessageState extends State<Message> {
       FirebaseFirestore.instance.collection(widget.channelName.toString()).add({
         "name": widget.userName.toString(),
         "msg" : text, 
-        "time": DateTime.now()
+        "time" : DateTime.now().toString(),
         }).then((value) => print(value)).catchError((onError) => print(onError));
         _channelMessageController.clear();
     } catch (errorCode) {
       _log('error sending message: ' + errorCode.toString());
     }
+    
+
   }
 
   void _log(String info) {
@@ -235,4 +269,16 @@ class _MessageState extends State<Message> {
       _infoStrings.add(info);
     });
   }
+  void addmsg(Messagedata x){
+    setState(() {
+      msgl.add(x);
+    });
+  }
+}
+
+class Messagedata{
+  String name;
+  String msg;
+  String time;
+  Messagedata(this.name,this.msg,this.time);
 }
