@@ -32,7 +32,9 @@ class _IndchatpageState extends State<Indchatpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
         title: Text(widget.touser),
       ),
       body: Container(
@@ -90,12 +92,18 @@ class _IndchatpageState extends State<Indchatpage> {
         itemBuilder: (context,i){
         return Container(
           padding: EdgeInsets.all(10),
-          child: Container(
-            alignment: msgs[i].substring(0,msgs[i].indexOf('~'))==widget.fromuser ? Alignment.centerRight : Alignment.centerLeft,
-            child: Text(
-              msgs[i].substring(0,msgs[i].indexOf('~'))==widget.fromuser ? "you : "+msgs[i].substring(msgs[i].indexOf('=')+1) : 
-              msgs[i].substring(0,msgs[i].indexOf('@')) + ": " + msgs[i].substring(msgs[i].indexOf('=')+1)
-            ),
+          child: Row(
+            children: [
+              msgs[i].substring(0,msgs[i].indexOf('~'))==widget.fromuser ? Spacer() : Text(""),
+              Container(
+                padding: EdgeInsets.all(8),
+                color: Colors.white,
+                child: Text(
+                  msgs[i].substring(0,msgs[i].indexOf('~'))==widget.fromuser ? "you : "+msgs[i].substring(msgs[i].indexOf('=')+1) : 
+                  msgs[i].substring(0,msgs[i].indexOf('@')) + ": " + msgs[i].substring(msgs[i].indexOf('=')+1)
+                ),
+              ),
+            ],
           ),
         );
       },

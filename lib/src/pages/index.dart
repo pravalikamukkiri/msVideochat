@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:teamsclone/src/pages/message.dart';
 import 'chathistory.dart';
-
 import './call.dart';
 
 class IndexPage extends StatefulWidget {
@@ -23,6 +22,7 @@ class IndexState extends State<IndexPage> {
 
   /// if channel textField is validated to have error
   bool _validateError = false;
+  bool record=false;
 
   ClientRole _role = ClientRole.Broadcaster;
 
@@ -37,9 +37,10 @@ class IndexState extends State<IndexPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: Text("welcome teamsclone"),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blueAccent,
         foregroundColor: Colors.white,
         centerTitle: true,
         actions: [
@@ -90,12 +91,14 @@ class IndexState extends State<IndexPage> {
               ],
             ),
             RaisedButton(
+              color: Colors.white,
                   child: Text('Join meet'),
                   onPressed:(){
                     onJoin();
                   },
                 ),
             RaisedButton(
+              color: Colors.white,
               padding: EdgeInsets.all(5),
               child: Text('Join chat room'),
               onPressed:() async{
@@ -105,6 +108,7 @@ class IndexState extends State<IndexPage> {
                     builder: (context) => Message(
                       userName: widget.name,
                       channelName: _channelController.text,
+                      useremail: widget.email,
                     )
                   ),
                 );

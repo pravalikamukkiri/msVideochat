@@ -22,21 +22,22 @@ class _SigninState extends State<Signin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         //toolbarHeight: 29,
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.blueAccent,
         actions: [
           Container(
             padding: EdgeInsets.all(10.0),
             child: RaisedButton(
-              color: Colors.grey,
+              color: Colors.white,
               onPressed: (){
                 Navigator.push(context, MaterialPageRoute(
                         builder: (context) => Register()));
               },
               child: Text('Register',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -86,6 +87,7 @@ class _SigninState extends State<Signin> {
               ),
               SizedBox(height: 20,),
               RaisedButton(
+                color: Colors.white,
                 onPressed: () async {
                   if(_formKey.currentState.validate()) {
                     print('ok');

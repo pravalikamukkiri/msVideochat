@@ -9,8 +9,9 @@ import 'members.dart';
 class Message extends StatefulWidget {
   final String userName;
   final String channelName;
+  final String useremail;
 
-  const Message({Key key,  this.userName, this.channelName,}) : super(key: key);
+  const Message({Key key,  this.userName, this.channelName,this.useremail}) : super(key: key);
   @override
   _MessageState createState() => _MessageState();
 }
@@ -41,9 +42,10 @@ class _MessageState extends State<Message> {
   Widget build(BuildContext context) {
     String name;
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
           appBar: AppBar(
             title: Text(widget.channelName.toString()),
-            backgroundColor: Colors.black,
+            backgroundColor: Colors.blueAccent,
             foregroundColor: Colors.white,
           ),
           body: Container(
@@ -85,12 +87,15 @@ class _MessageState extends State<Message> {
     return channel;
   }
 
-  static TextStyle textStyle = TextStyle(fontSize: 18, color: Colors.blue);
+  static TextStyle textStyle = TextStyle(fontSize: 18, color: Colors.black,);
 
   Widget _buildLogin() {
-    return Row(children: <Widget>[
+    return Row(
+      children: <Widget>[
       new Text(widget.userName,style: textStyle),
-     new OutlineButton(
+     new RaisedButton(
+       padding: EdgeInsets.all(5),
+       color: Colors.white,
         child: Text(_isLogin ? 'Leave' : 'Start', style: textStyle),
         onPressed: (){
           if(_isLogin){
@@ -105,11 +110,13 @@ class _MessageState extends State<Message> {
         }
       ),
       Spacer(),
-      new RaisedButton.icon(
-        color: Colors.lightBlueAccent.shade100,
+      _isLogin == true ?  new RaisedButton.icon(
+        color: Colors.white,
         label: Text("Participants"),
         padding: EdgeInsets.all(5),
-        icon: Icon(Icons.people), onPressed: _toggleGetMembers)
+        icon: Icon(Icons.people), onPressed: _toggleGetMembers) :
+        Text("")
+     
     ]);
   }
 
@@ -122,7 +129,8 @@ class _MessageState extends State<Message> {
           child: new TextField(
               controller: _channelMessageController,
               decoration: InputDecoration(hintText: 'Input channel message'))),
-      new OutlineButton(
+      new RaisedButton(
+        color: Colors.white,
         child: Text('Send to Channel', style: textStyle),
         onPressed: _toggleSendChannelMessage,
       )
@@ -252,6 +260,11 @@ class _MessageState extends State<Message> {
         "time" : DateTime.now().toString(),
         }).then((value) => print(value)).catchError((onError) => print(onError));
         _channelMessageController.clear();
+        FirebaseFirestore.instance.collection(widget.useremail.toString()).doc("chanels").setData(
+          {
+            widget.channelName : "chanel",
+          }
+        );
     } catch (errorCode) {
       _log('error sending message: ' + errorCode.toString());
     }
