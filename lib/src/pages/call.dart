@@ -29,6 +29,7 @@ class _CallPageState extends State<CallPage> {
   final _infoStrings = <String>[];
   bool muted = false;
   bool camoff = false;
+  bool beautyoff = false;
   RtcEngine _engine;
 
   @override
@@ -66,8 +67,7 @@ class _CallPageState extends State<CallPage> {
     configuration.dimensions = VideoDimensions(1920, 1080);
     await _engine.setVideoEncoderConfiguration(configuration);
     await _engine.joinChannel(null, widget.channelName, null, 0);
-    // await _engine.enableDualStreamMode(true);
-    // await _engine.setLocalPublishFallbackOption(StreamFallbackOptions.VideoStreamLow);
+
     
   }
 
@@ -277,7 +277,7 @@ class _CallPageState extends State<CallPage> {
             elevation: 2.0,
             fillColor: Colors.white,
             padding: const EdgeInsets.all(12.0),
-          )
+          ),
         ],
       ),
     );
@@ -298,7 +298,20 @@ class _CallPageState extends State<CallPage> {
     setState(() {
       camoff = !camoff;
     });
-    _engine.muteLocalVideoStream(camoff);
+    if(camoff){
+      _engine.disableVideo();
+    }
+    else{
+      _engine.enableVideo();
+    }
+  }
+  void _onbeauty(){
+    setState(() {
+      beautyoff=!beautyoff;
+    });
+    if(!beautyoff){
+      _engine.setBeautyEffectOptions(true,BeautyOptions());
+    }
   }
 
   @override
@@ -308,6 +321,9 @@ class _CallPageState extends State<CallPage> {
         title: Text(widget.channelName.toString()),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(icon: Icon(Icons.face), onPressed:  _onbeauty)
+        ],
       ),
       backgroundColor: Colors.black,
       body: Center(
@@ -321,3 +337,12 @@ class _CallPageState extends State<CallPage> {
     );
   }
 }
+
+// class BeautyOptions{
+//   LighteningContrastLevel a;
+//   int b;
+//   int c;
+//   int d;
+//   BeautyOptions({this.a,this.b,this.c,this.d});
+
+// }

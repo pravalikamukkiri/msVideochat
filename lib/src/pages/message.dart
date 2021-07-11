@@ -146,9 +146,9 @@ class _MessageState extends State<Message> {
           child: Container(
             padding: EdgeInsets.all(5),
             decoration: BoxDecoration(
-              color: Colors.lightBlueAccent.shade100,
+              color: Colors.white,
               border: Border.all(width:5,
-              color: Colors.blue.shade200),
+              color: Colors.white),
               borderRadius: BorderRadius.all(Radius.circular(10.0))),
             child: Text(
               _infoStrings[i].substring(0,_infoStrings[i].indexOf(':')) == widget.userName ?

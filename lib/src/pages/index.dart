@@ -85,16 +85,15 @@ class IndexState extends State<IndexPage> {
                   },
                 ),),
                 Text("Auidence"),
-                Spacer(),
-                RaisedButton(
+                
+              ],
+            ),
+            RaisedButton(
                   child: Text('Join meet'),
                   onPressed:(){
                     onJoin();
                   },
                 ),
-                Spacer(),
-              ],
-            ),
             RaisedButton(
               padding: EdgeInsets.all(5),
               child: Text('Join chat room'),
