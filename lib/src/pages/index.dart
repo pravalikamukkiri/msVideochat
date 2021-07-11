@@ -4,10 +4,14 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:teamsclone/src/pages/message.dart';
+import 'chathistory.dart';
 
 import './call.dart';
 
 class IndexPage extends StatefulWidget {
+  final String name;
+  final String email;
+  const IndexPage({Key key, this.name, this.email}) : super(key: key);
   @override
   State<StatefulWidget> createState() => IndexState();
 }
@@ -15,7 +19,7 @@ class IndexPage extends StatefulWidget {
 class IndexState extends State<IndexPage> {
   /// create a channelController to retrieve text value
   final _channelController = TextEditingController();
-  final _usernameController = TextEditingController();
+  // final _usernameController = TextEditingController();
 
   /// if channel textField is validated to have error
   bool _validateError = false;
@@ -38,22 +42,19 @@ class IndexState extends State<IndexPage> {
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.chat),
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(
+              builder: (context) => Chatpage(name: widget.name ,email: widget.email,)));
+              }
+          )
+        ],
       ),
       body: Center(
         child: Column(
           children: [
-            Container(
-              padding: EdgeInsets.all(20),
-              height: 100,
-             child:TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  errorText:_validateError ? 'Your name is mandatory' : null,
-                  border: UnderlineInputBorder(),
-                  hintText: 'Your name',
-                ),
-              )
-            ),
             Container(
               padding: EdgeInsets.all(20),
               height: 100,
@@ -102,11 +103,12 @@ class IndexState extends State<IndexPage> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => Message(
-                      userName: _usernameController.text,
+                      userName: widget.name,
                       channelName: _channelController.text,
                     )
                   ),
                 );
+
               },
             ),
           ],
@@ -132,7 +134,7 @@ class IndexState extends State<IndexPage> {
         MaterialPageRoute(
           builder: (context) => CallPage(
             channelName: _channelController.text,
-            userName: _usernameController.text,
+            userName: widget.name,
             role: _role,
           ),
         ),

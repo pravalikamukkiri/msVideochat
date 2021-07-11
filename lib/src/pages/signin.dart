@@ -95,8 +95,11 @@ class _SigninState extends State<Signin> {
                       setState(() {
                         ud=result.user.uid;
                       });
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => IndexPage()));
+                      Firestore.instance.collection("users").doc(email).get().then((value) => {
+                         Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => IndexPage(name: value["name"], email: email,)))
+                      });
+                     
                     });
                   }
                 },

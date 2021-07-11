@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/rendering.dart';
@@ -123,9 +124,11 @@ class _RegisterState extends State<Register> {
                       setState(() {
                         ud=result.user.uid;
                       });
+                      Firestore.instance.collection("users").doc(email.toString()).set({
+                        "name" : name
+                      });
                       Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => IndexPage()));
-                      // await DatabaseService(uid: result.user.uid).updateUserData(name, '');
+                        builder: (context) => IndexPage(name:name,email: email,)));
                     });
                   }
                 },

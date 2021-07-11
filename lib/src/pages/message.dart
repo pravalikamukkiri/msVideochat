@@ -130,10 +130,6 @@ class _MessageState extends State<Message> {
   }
 
   Widget _buildInfoList() {
-    // msgl.sort((a,b) => a.time.compareTo(b.time));
-    // msgl.forEach((element)=> {
-    //   _log(element.name.toString() +":" +element.msg.toString())
-    //   });
     
     return Expanded(
         child: Container(
