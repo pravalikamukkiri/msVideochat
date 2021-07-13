@@ -70,7 +70,7 @@ class _ChatpageState extends State<Chatpage> {
             });
           }
           else{
-            element.data().forEach((key, value) {
+            element.data().forEach((key, value){
               if(!chats.contains("g="+key)){
                 setState(() {
                   chats.add("g="+key);

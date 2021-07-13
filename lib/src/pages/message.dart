@@ -260,10 +260,12 @@ class _MessageState extends State<Message> {
         "time" : DateTime.now().toString(),
         }).then((value) => print(value)).catchError((onError) => print(onError));
         _channelMessageController.clear();
-        FirebaseFirestore.instance.collection(widget.useremail.toString()).doc("chanels").setData(
+        FirebaseFirestore.instance.collection(widget.useremail.toString()).doc("chanels").set(
           {
             widget.channelName : "chanel",
-          }
+            
+          },
+          SetOptions(merge: true),
         );
     } catch (errorCode) {
       _log('error sending message: ' + errorCode.toString());

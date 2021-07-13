@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     
+    
 
 <!-- The Agora SDK requires Bluetooth permissions in case users are using Bluetooth devices.-->
 <uses-permission android:name="android.permission.BLUETOOTH" />
